@@ -54,9 +54,23 @@ Esp_verde_Comuna %>%
   mutate(KM_2com=(M2_Comuna/area_km2)*1000000)
 
 # Esto indica que la comuna con mayor cantidad de m2 de espacio verde público por km2 es la Comuna 6 (8874 m2 por cada km2), seguida de la 14 (7417) y la Comuna 12 (6187). Por el contrario, la Comuna con peor relación de m2 verde público por km2 es la Comuna 15 con (1451) seguida de la Comuna 2 (1540) y la Comuna 8 (1548).
+# Voy a graficar estas relaciones:
 
+Esp_verde_Comuna <- left_join(Comunas, Esp_verde_Comuna, by=c("nombre"="COMUNA")) %>%
+  filter(provincia=="CABA")
 
-  
-  
+m2verdes_barrio <- ggplot()+
+  geom_sf(data=Esp_verde_Comuna, aes(fill=M2_Comuna))+
+  geom_sf_label(data=Esp_verde_Comuna, aes(label=nombre), size=2)+
+  labs(title="¿Cuántos m2 de espacio verde hay por Comuna?",
+       subtitle="Comunas CABA",
+       fill="M2 cuadrados espacios verde por Comuna",
+       caption="Fuente: Datos GCBA")+
+  scale_fill_distiller(palette="Greens")+
+  theme_minimal()
+
+m2verdes_barrio
+
+# En este gráfico se puede observar espacialmente que cue comunas tienen mayor cantidad de m2 de espacios verdes.
 
 
