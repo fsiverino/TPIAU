@@ -72,5 +72,21 @@ m2verdes_barrio <- ggplot()+
 m2verdes_barrio
 
 # En este gráfico se puede observar espacialmente que cue comunas tienen mayor cantidad de m2 de espacios verdes.
+# Ahora voy a incorporar data de Properati para ver la relación del precio de compra/venta de propiedades en relación a los espacios verdes públicos.
+
+data_Properati <- vroom::vroom("https://storage.googleapis.com/properati-data-public/ar_properties.csv.gz")
+
+skimr::skim(data_Properati)
+
+str(data_Properati)
+
+data_Properati  %>% count(l2)
+
+# Tenemos 265125 propiedades en Capital Federal, que son con las que nos vamos a quedar.
+
+data_Properati <- data_Properati %>%
+  filter(l2=="Capital Federal" & operation_type=="Venta")
+# Quedaron 183810 propiedades que están en venta. Ahora con un gráfico la intención es mostrar cuanto afecta la cercanía a un espacio verde al precio de venta de la propiedad.
+
 
 
