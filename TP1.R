@@ -84,9 +84,40 @@ data_Properati  %>% count(l2)
 
 # Tenemos 265125 propiedades en Capital Federal, que son con las que nos vamos a quedar.
 
-data_Properati <- data_Properati %>%
-  filter(l2=="Capital Federal" & operation_type=="Venta")
-# Quedaron 183810 propiedades que están en venta. Ahora con un gráfico la intención es mostrar cuanto afecta la cercanía a un espacio verde al precio de venta de la propiedad.
+data_Properaticaba <- data_Properati %>%
+  filter(l2=="Capital Federal" & operation_type=="Venta" & lat!="NA" & currency=="USD") %>%
+  st_as_sf(coords=c("lon", "lat"), crs=4326)
+# Quedaron 168085 propiedades que están en venta. Ahora con un gráfico la intención es mostrar cuanto afecta la cercanía a un espacio verde al precio de venta de la propiedad.
 
+Espacio_verde_res <- Espacio_verde_res %>%
+  st_as_sf(wkt="WKT", crs=4326)
 
+st_crs(Comunas)
+st_crs(data_Properaticaba)
+st_crs(Espacio_verde_res)
 
+data_Properaticaba <- st_join(data_Properaticaba, Comunas)
+
+data_Properaticaba <- filter(data_Properaticaba, !is.na(nombre))
+
+summary(data_Properaticaba)
+
+ggplot(data_Properaticaba)+
+  geom_sf()
+
+relacion_verde_venta <- ggplot()+
+  geom_sf(data=filter(Comunas, provincia=="CABA"))+
+  geom_sf(data=data_Properaticaba, aes(color=price), alpha=0.1)+
+  geom_sf(data=Espacio_verde_res, color="darkolivegreen4")+
+  labs(title="Relación entre precio venta inmuebles y cercanía a espacios verdes",
+       subtitle="CABA",
+       color="Precio por m2 en USD",
+       caption="Fuente: Datos GCBA y Properati")+
+  theme_minimal()
+
+relacion_verde_venta
+ 
+
+options(scipen=999)
+
+# Para cerrar el TP quise ver la relación del precio de los departamentos en venta con su cercanía a los espacios verdes. Sin embargo, por los precios outsiders del dataset de properati, es muy dificil distinguir el rango de precios y su cercanía a espacios verdes.
