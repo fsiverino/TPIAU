@@ -105,6 +105,8 @@ summary(data_Properaticaba)
 ggplot(data_Properaticaba)+
   geom_sf()
 
+options(scipen=999)
+
 relacion_verde_venta <- ggplot()+
   geom_sf(data=filter(Comunas, provincia=="CABA"))+
   geom_sf(data=data_Properaticaba, aes(color=price), alpha=0.1)+
@@ -116,8 +118,33 @@ relacion_verde_venta <- ggplot()+
   theme_minimal()
 
 relacion_verde_venta
+
+data_Properaticaba  %>%
+  select(as.character("price")) %>%
+  summary()
+
+data_Properaticaba <- data_Properaticaba %>%
+  filter(!is.na(surface_total)) %>%
+  mutate(precio_m2=price/surface_total) %>% 
+  mutate(categoria=cut(precio_m2, breaks=c(0,1000,2000,3000,4000,+Inf), labels=c("0-999","1000-1999","2000-2999","3000-4000","+4000")))
+
+
+data_Properaticaba  %>%
+  select(as.character("precio_m2")) %>%
+  summary()
+relacion_verde_venta <- ggplot()+
+  geom_sf(data=filter(Comunas, provincia=="CABA"))+
+  geom_sf(data=data_Properaticaba, aes(color=categoria), alpha=0.3)+
+  scale_color_viridis_d()+
+  geom_sf(data=Espacio_verde_res, color="darkgreen")+
+  labs(title="Relación entre precio venta inmuebles y cercanía a espacios verdes",
+       subtitle="CABA",
+       color="Precio por m2 en USD",
+       caption="Fuente: Datos GCBA y Properati")+
+  theme_minimal()
+
+relacion_verde_venta
  
 
-options(scipen=999)
-
-# Para cerrar el TP quise ver la relación del precio de los departamentos en venta con su cercanía a los espacios verdes. Sin embargo, por los precios outsiders del dataset de properati, es muy dificil distinguir el rango de precios y su cercanía a espacios verdes.
+# Para cerrar el TP quise ver la relación del precio de los departamentos en venta con su cercanía a los espacios verdes. No parecería la cercanía a los espacios verdes influir en el precio por m2 de la propiedad, sino más bien una cuestión de ubicación barrial.
+# Sin embargo, en los barrios donde los precios por m2 son más económicos, en especial al sur de la ciudad, sí se puede apreciar cierto aumento de precio dentro del barrio en cercanía a los espacios verdes.
